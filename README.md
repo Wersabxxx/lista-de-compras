@@ -2,7 +2,7 @@
 
 [**Abrir la aplicación**](https://jhonjairochaverra2-glitch.github.io/lista-de-compras/)
 
-Una aplicación web ligera para organizar una compra desde el celular. No necesita cuenta, servidor ni claves de API.
+Una aplicación web ligera para organizar una compra desde el celular.
 
 ## Funciones
 
