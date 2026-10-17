@@ -1,0 +1,14 @@
+{
+  "name": "Mi lista de compras",
+  "short_name": "Compras",
+  "description": "Una lista de compras sencilla que funciona desde tu celular.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#28634d",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

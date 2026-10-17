@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5ef">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>Mi lista de compras</title>
+  <style>
+    :root { color-scheme:light; --ink:#172b24; --muted:#748078; --green:#28634d; --line:#e9eee9; --paper:#fff; --bg:#f7f8f5; --soft:#eff5f0; }
+    * { box-sizing:border-box }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    body { margin:0; min-height:100vh; background:radial-gradient(ellipse at 50% -12%,#e8f2e9 0,transparent 42%),var(--bg); color:var(--ink); font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    main { width:min(100% - 40px, 780px); margin:0 auto; padding:72px 0 48px; }
+    .topline { display:flex; align-items:center; gap:13px; margin-bottom:34px; }
+    .brand-icon { display:grid; width:46px; height:46px; place-items:center; border:1px solid #d9e8dc; border-radius:15px; background:#edf5ee; color:var(--green); }
+    .brand-icon svg { width:23px; height:23px; }
+    .brand-name { font-size:.9rem; font-weight:750; letter-spacing:-.02em; }
+    .brand-caption { color:var(--muted); font-size:.78rem; }
+    .heading { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; }
+    h1 { margin:0; font-size:clamp(2.2rem,6vw,3.2rem); font-weight:740; letter-spacing:-.06em; line-height:1.08; }
+    .intro { max-width:440px; margin:12px 0 0; color:var(--muted); font-size:1rem; }
+    .today { flex:0 0 auto; padding:9px 13px; border:1px solid #e5eae4; border-radius:999px; background:#ffffffb8; color:#516158; font-size:.83rem; font-weight:650; }
+    .card { margin-top:30px; padding:26px; border:1px solid #e7ebe6; border-radius:22px; background:var(--paper); box-shadow:0 24px 70px #1d36260c,0 2px 8px #1d362607; }
+    .form-label { display:block; margin:0 0 10px 2px; color:#536158; font-size:.82rem; font-weight:700; }
+    form { display:grid; grid-template-columns:minmax(0,1fr) 130px auto; gap:10px; }
+    input,button { min-height:48px; border-radius:12px; font:inherit; }
+    input { width:100%; padding:0 14px; border:1px solid #e1e7e1; background:#fbfcfb; color:var(--ink); transition:border-color .18s,box-shadow .18s,background .18s; }
+    input::placeholder { color:#9aa59d; }
+    input:focus { outline:none; border-color:#77a28a; background:white; box-shadow:0 0 0 4px #28634d16; }
+    button { padding:0 16px; border:0; cursor:pointer; font-weight:700; transition:transform .15s,background .15s,box-shadow .15s; }
+    button:active { transform:translateY(1px); }
+    .add { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--green); color:white; box-shadow:0 4px 10px #28634d20; }
+    .add:hover { background:#20543f; box-shadow:0 6px 15px #28634d2b; }
+    .add svg { width:17px; height:17px; }
+    .divider { height:1px; margin:25px 0 18px; background:var(--line); }
+    .summary { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 0 12px; }
+    .summary strong { font-size:1rem; letter-spacing:-.02em; }
+    .count { padding:5px 10px; border-radius:999px; background:var(--soft); color:#43664f; font-size:.78rem; font-weight:650; }
+    ul { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+    li { display:flex; align-items:center; gap:12px; min-height:58px; padding:8px 12px; border:1px solid var(--line); border-radius:13px; background:white; transition:border-color .15s,background .15s; }
+    li:not(.empty):hover { border-color:#d5e1d7; background:#fcfdfc; }
+    li input[type=checkbox] { width:19px; height:19px; min-height:0; margin:0; accent-color:var(--green); flex:0 0 auto; cursor:pointer; }
+    .item-name { flex:1; overflow-wrap:anywhere; font-weight:550; }
+    .quantity { padding:4px 9px; border-radius:8px; background:#f3f5f2; color:#66736b; font-size:.8rem; white-space:nowrap; }
+    li.done .item-name { color:#9aa49d; text-decoration:line-through; }
+    li.done { background:#fbfcfb; }
+    .remove { min-height:34px; padding:0 10px; border-radius:9px; background:transparent; color:#8a625b; font-size:.82rem; }
+    .remove:hover { background:#fbf1ef; color:#75453e; }
+    .empty { display:block; padding:30px 12px; border:1px dashed #dfe7df; background:#fbfcfb; color:var(--muted); text-align:center; }
+    .empty::before { content:"✓"; display:grid; width:36px; height:36px; place-items:center; margin:0 auto 10px; border-radius:12px; background:#edf5ee; color:var(--green); font-size:1.1rem; font-weight:750; }
+    .footer { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:17px; color:var(--muted); font-size:.8rem; }
+    .saved { display:flex; align-items:center; gap:7px; }
+    .saved::before { content:""; width:7px; height:7px; border-radius:50%; background:#75a681; }
+    .clear { min-height:36px; padding:0 10px; border-radius:9px; background:transparent; color:var(--green); font-size:.82rem; }
+    .clear:hover { background:#eff5f0; }
+    @media (max-width:600px) {
+      body { background:radial-gradient(ellipse at 50% -12%,#e8f2e9 0,transparent 42%),var(--bg); }
+      main { width:min(100% - 28px, 480px); padding:28px 0 32px; }
+      .topline { margin-bottom:28px; }
+      .heading { align-items:flex-start; flex-direction:column; gap:12px; }
+      .today { order:-1; padding:7px 11px; font-size:.78rem; }
+      h1 { font-size:clamp(2.15rem,10vw,2.75rem); }
+      .intro { margin-top:9px; font-size:.94rem; }
+      .card { margin-top:22px; padding:17px; border-radius:18px; }
+      form { grid-template-columns:minmax(0,1fr) 104px; gap:8px; }
+      input,button { min-height:50px; }
+      form .add { grid-column:1 / -1; }
+      .divider { margin:21px 0 16px; }
+      li { min-height:64px; gap:10px; padding:8px 10px; border-radius:12px; }
+      li input[type=checkbox] { width:22px; height:22px; }
+      .remove { min-height:40px; padding:0 9px; }
+      .footer { align-items:flex-start; flex-direction:column; gap:8px; }
+      .clear { min-height:42px; padding:0 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topline">
+      <div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3M9 13h.01M15 13h.01"/></svg></div>
+      <div><div class="brand-name">Lista de compras</div><div class="brand-caption">Organiza lo que necesitas</div></div>
+    </div>
+    <div class="heading">
+      <div><h1>Tu próxima compra,<br>más fácil.</h1><p class="intro">Anota lo que necesitas y marca cada cosa al comprarla.</p></div>
+      <div class="today" id="today"></div>
+    </div>
+
+    <section class="card" aria-label="Lista de compras">
+      <label class="form-label" for="item-name">Añade a tu lista</label>
+      <form id="item-form">
+        <input id="item-name" name="name" placeholder="¿Qué necesitas?" maxlength="80" autocomplete="off" required>
+        <label class="sr-only" for="item-quantity">Cantidad</label>
+        <input id="item-quantity" name="quantity" placeholder="Cantidad" maxlength="30" aria-label="Cantidad (opcional)">
+        <button class="add" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Añadir</button>
+      </form>
+      <div class="divider"></div>
+      <div class="summary"><strong>Tu lista</strong><span class="count" id="count"></span></div>
+      <ul id="items" aria-live="polite"></ul>
+      <div class="footer"><span class="saved">Guardado automáticamente en este dispositivo</span><button class="clear" id="clear-done" type="button">Borrar comprados</button></div>
+    </section>
+  </main>
+  <script>
+    const STORAGE_KEY = 'mi-lista-de-compras-v1';
+    const form = document.querySelector('#item-form');
+    const nameField = document.querySelector('#item-name');
+    const quantityField = document.querySelector('#item-quantity');
+    const list = document.querySelector('#items');
+    const count = document.querySelector('#count');
+    document.querySelector('#today').textContent = new Intl.DateTimeFormat('es', { weekday:'long', day:'numeric', month:'long' }).format(new Date());
+    let items = loadItems();
+
+    function loadItems() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        return Array.isArray(saved) ? saved.filter(item => item && typeof item.name === 'string') : [];
+      } catch { return []; }
+    }
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+    function render() {
+      list.replaceChildren();
+      const pending = items.filter(item => !item.done).length;
+      count.textContent = items.length ? `${pending} pendiente${pending === 1 ? '' : 's'} · ${items.length} en total` : 'Aún no hay productos';
+      if (!items.length) {
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = 'Tu lista está vacía. Añade el primer producto arriba.';
+        list.append(empty);
+        return;
+      }
+      items.forEach(item => {
+        const row = document.createElement('li');
+        if (item.done) row.classList.add('done');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox'; checkbox.checked = Boolean(item.done);
+        checkbox.setAttribute('aria-label', `Marcar ${item.name} como ${item.done ? 'pendiente' : 'comprado'}`);
+        checkbox.addEventListener('change', () => { item.done = checkbox.checked; save(); render(); });
+        const label = document.createElement('span'); label.className = 'item-name'; label.textContent = item.name;
+        row.append(checkbox, label);
+        if (item.quantity) { const qty = document.createElement('span'); qty.className = 'quantity'; qty.textContent = item.quantity; row.append(qty); }
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove'; remove.textContent = 'Quitar';
+        remove.setAttribute('aria-label', `Quitar ${item.name}`);
+        remove.addEventListener('click', () => { items = items.filter(entry => entry.id !== item.id); save(); render(); });
+        row.append(remove); list.append(row);
+      });
+    }
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const name = nameField.value.trim();
+      if (!name) return;
+      items.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, name, quantity: quantityField.value.trim(), done: false });
+      save(); render(); form.reset(); nameField.focus();
+    });
+    document.querySelector('#clear-done').addEventListener('click', () => {
+      items = items.filter(item => !item.done); save(); render();
+    });
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    }
+    render();
+  </script>
+</body>
+</html>
